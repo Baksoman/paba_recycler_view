@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.paba_recycler_view.databinding.ActivityMainBinding
+import com.example.paba_recycler_view.databinding.DialogTambahBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +41,29 @@ class MainActivity : AppCompatActivity() {
         binding.btnToggleLayout.setOnCheckedChangeListener { _, _ ->
             tampilkanData()
         }
+        binding.btnTambahWayang.setOnClickListener {
+            val dialogBinding = DialogTambahBinding.inflate(layoutInflater)
+            AlertDialog.Builder(this)
+                .setTitle("Tambah Data Wayang")
+                .setView(dialogBinding.root)
+                .setPositiveButton("Simpan") { _, _ ->
+                    val nama = dialogBinding.etNamaWayang.text.toString()
+                    val karakter = dialogBinding.etKategoriWayang.text.toString()
+                    val deskripsi = dialogBinding.etDeskripsiWayang.text.toString()
+                    val foto = dialogBinding.etFotoWayang.text.toString()
+
+                    if (nama.isNotEmpty()) {
+                        val wayangBaru = DcWayang(foto, nama, karakter, deskripsi)
+                        _arWayang.add(wayangBaru)
+                        adapterWayang.notifyItemInserted(_arWayang.size - 1)
+                        Toast.makeText(this, "$nama berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Batal", null)
+                .show()
+        }
     }
 
     private fun siapkanData() {
@@ -63,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun tampilkanData() {
+        binding.rvWayang.setHasFixedSize(true)
         binding.rvWayang.itemAnimator = DefaultItemAnimator().apply {
             removeDuration = 400L
         }
